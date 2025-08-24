@@ -1,0 +1,19 @@
+# Ignorar archivos objeto y binarios de C
+*.o
+*.out
+*.exe
+
+# Ignorar archivos de respaldo y compilación
+*.a
+*.so
+*.dll
+
+# Ignorar archivos de depuración
+*.dSYM/
+*.stackdump
+
+# Ignorar archivos generados por editores
+*~
+
+# Ignorar directorio de configuración de VSCode
+.vscode/
