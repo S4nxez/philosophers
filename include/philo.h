@@ -6,7 +6,7 @@
 /*   By: dansanc3 <dansanc3@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 22:23:23 by dansanc3          #+#    #+#             */
-/*   Updated: 2025/08/24 23:30:41 by dansanc3         ###   ########.fr       */
+/*   Updated: 2025/10/06 20:50:41 by dansanc3         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 # include <string.h>
 # include <unistd.h>
 # include <sys/time.h>
+#include <stdbool.h>
 
 typedef struct s_philo
 {
@@ -56,7 +57,9 @@ typedef struct s_program
 void	*philo_functions(void *params_void);
 void	p_sleep(int time_to_sleep, t_philo philo);
 void	think(int time_to_think, t_philo philo);
-void	eat(int time_to_eat, t_philo philo);
+void	eat(int time_to_eat, t_philo philo,
+	pthread_mutex_t	*left_fork, pthread_mutex_t	*right_fork);
 void	philo_print(int action, int philo, int finished);
+bool	is_number(char *arg);
 
 #endif

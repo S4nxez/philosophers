@@ -6,7 +6,7 @@
 #    By: dansanc3 <dansanc3@student.42madrid>       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/08/09 22:23:23 by dansanc3          #+#    #+#              #
-#    Updated: 2025/08/24 23:33:32 by dansanc3         ###   ########.fr        #
+#    Updated: 2025/08/27 22:29:44 by dansanc3         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,7 @@ OBJ_DIR = obj
 SRC_DIR = src
 
 # Source files
-SRC = main philo_functions utils
+SRC = main philo_functions utils is_number
 
 # Object files
 OBJS = $(addprefix obj/, $(addsuffix .o, $(SRC)))
