@@ -6,7 +6,7 @@
 /*   By: dansanc3 <dansanc3@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/01/24 16:16:25 by dansanc3          #+#    #+#             */
-/*   Updated: 2025/08/24 23:53:31 by dansanc3         ###   ########.fr       */
+/*   Updated: 2025/10/13 19:31:50 by dansanc3         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,6 @@ int	main(void)
 	printf("Atoi og: %d\n", atoi(" -12323s2"));
 	printf("Atoi og: %d\n", atoi("    123"));
 	printf("Atoi og: %d\n", atoi("asdas"));
-
 	printf("\n\n");
 	printf("Atoi ft: %d\n", ft_atoi("--12"));
 	printf("Atoi ft: %d\n", ft_atoi("-+12"));

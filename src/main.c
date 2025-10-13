@@ -6,32 +6,31 @@
 /*   By: dansanc3 <dansanc3@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/19 22:23:23 by dansanc3          #+#    #+#             */
-/*   Updated: 2025/10/06 20:55:43 by dansanc3         ###   ########.fr       */
+/*   Updated: 2025/10/13 19:53:34 by dansanc3         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	launch_philo(t_params *params, int i, pthread_t *philo,
+void	launch_philo(t_params params, int i, t_philo *philo,
 	pthread_mutex_t *forks)
 {
-	t_philo	*new_philo;
-
-	new_philo = malloc(sizeof(t_philo));
-	new_philo->id = i;
+	philo->id = i;
 	struct {
-		t_params		*params;
+		t_params		params;
 		t_philo			*philo;
 		pthread_mutex_t	*left_fork;
 		pthread_mutex_t	*right_fork;
 	} *thread_args = malloc(sizeof(*thread_args));
 	thread_args->params = params;
-	thread_args->philo = new_philo;
-
+	thread_args->philo = philo;
+	philo->times_eaten = 0;
+	philo->dead = 0;
+	philo->last_meal = 0;
 	pthread_mutex_init(&forks[i], NULL);
 	thread_args->left_fork = &forks[i];
 	thread_args->right_fork = &forks[i - 1];
-	pthread_create(philo, NULL, philo_functions, (void *)thread_args);
+	pthread_create(&philo->thread, NULL, philo_functions, (void *)thread_args);
 }
 
 /**
@@ -78,7 +77,7 @@ int	main(int argc, char **argv)
 	i = 0;
 	while (i < params.philo_number)
 	{
-		launch_philo(&params, i + 1, &philos[i].thread, forks);
+		launch_philo(params, i + 1, &philos[i], forks);
 		philos[i].id = i + 1;
 		i++;
 	}
