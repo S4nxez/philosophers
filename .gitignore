@@ -17,3 +17,5 @@
 
 # Ignorar directorio de configuración de VSCode
 .vscode/
+
+philo

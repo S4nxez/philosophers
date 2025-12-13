@@ -44,6 +44,7 @@ int	ft_atoi(const char *str)
 	return (ret * sign);
 }
 
+/*
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -63,3 +64,4 @@ int	main(void)
 	printf("Atoi ft: %d\n", ft_atoi("    123"));
 	printf("Atoi ft: %d\n", ft_atoi("asdas"));
 }
+*/

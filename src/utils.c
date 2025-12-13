@@ -13,31 +13,33 @@
 #include "philo.h"
 
 /**
- * @param action 1 for sleep, 2 for think, 3 for eat, 4 for starved
+ * @param action the action the philosopher is doing
  * @param philo id from philosopher
- * @param finished 1 for action finished 0 for action started
  *
- * @return Last time eaten timestamp
+ * @return action timestamp
  */
-long	philo_print(int action, int philo, int finished)
+long	philo_print(philo_action_t action, int philo)
 {
-	char			*str;
-	long			ms;
+	long	ms;
+
+	ms = get_current_time();
+	if (action == FORK)
+		printf("[%ld] Philosopher %d has taken a fork\n", ms, philo);
+	else if (action == EAT)
+		printf("[%ld] Philosopher %d is eating\n", ms, philo);
+	else if (action == SLEEP)
+		printf("[%ld] Philosopher %d is sleeping\n", ms, philo);
+	else if (action == THINK)
+		printf("[%ld] Philosopher %d is thinking\n", ms, philo);
+	else if (action == DIE)
+		printf("[%ld] Philosopher %d died\n", ms, philo);
+	return (ms);
+}
+
+long	get_current_time(void)
+{
 	struct timeval	tv;
 
 	gettimeofday(&tv, NULL);
-	ms = tv.tv_sec * 1000 + tv.tv_usec / 1000;
-	if (action == 1)
-		str = "sleep";
-	else if (action == 2)
-		str = "think";
-	else if (action == 3)
-		str = "eat";
-	else if (action == 4)
-		str = "starving";
-	if (finished == 0)
-		printf("[%ld] Philosopher %d is %sing\n", ms, philo, str);
-	else
-		printf("[%ld] Philosopher %d has finished %sing\n", ms, philo, str);
-	return (ms);
+	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }

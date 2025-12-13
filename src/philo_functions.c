@@ -12,63 +12,75 @@
 
 #include "philo.h"
 
-void	eat(t_params params, t_philo *philo,
-	pthread_mutex_t	*left_fork, pthread_mutex_t	*right_fork)
+void	forks(t_philo philo, pthread_mutex_t	*left_fork,
+	pthread_mutex_t	*right_fork, bool lock)
+{
+	if (lock)
+	{
+		pthread_mutex_lock(left_fork);
+		philo_print(FORK, philo.id);
+		pthread_mutex_lock(right_fork);
+		philo_print(FORK, philo.id);
+	}
+	else
+	{
+		pthread_mutex_unlock(left_fork);
+		pthread_mutex_unlock(right_fork);
+	}
+}
+
+void	eat(t_params params, t_philo *philo)
 {
 	long	new_meal;
 	long	elapsed_time;
 
-	pthread_mutex_lock(left_fork);
-	pthread_mutex_lock(right_fork);
-	new_meal = philo_print(3, philo->id, 0);
+	new_meal = philo_print(EAT, philo->id);
 	if (philo->last_meal != 0)
 		elapsed_time = philo->last_meal - new_meal;
+	else
+		elapsed_time = philo->born - get_current_time();
 	if (elapsed_time * (-1) > params.time_to_starve * 1000)
 	{
-		philo->dead = 1;
-		philo_print(4, philo->id, 1);
-		pthread_mutex_unlock(left_fork);
-		pthread_mutex_unlock(right_fork);
+		philo->dead = true;
+		philo_print(DIE, philo->id);
 		return ;
 	}
 	sleep(params.time_to_eat);
-	philo_print(3, philo->id, 1);
-	pthread_mutex_unlock(left_fork);
-	pthread_mutex_unlock(right_fork);
 	philo->times_eaten++;
 	philo->last_meal = new_meal;
 }
 
 void	think(int time_to_think, t_philo philo)
 {
-	philo_print(2, philo.id, 0);
+	philo_print(THINK, philo.id);
 	sleep(time_to_think);
-	philo_print(2, philo.id, 1);
 }
 
 void	p_sleep(int time_to_sleep, t_philo philo)
 {
-	philo_print(1, philo.id, 0);
+	philo_print(SLEEP, philo.id);
 	sleep(time_to_sleep);
-	philo_print(1, philo.id, 1);
 }
 
 void	*philo_functions(void *params_void)
 {
-	struct {
+	t_params		params;
+	t_philo			*philo;
+
+	struct
+	{
 		t_params		params;
 		t_philo			*philo;
 		pthread_mutex_t	*left_fork;
 		pthread_mutex_t	*right_fork;
 	} *args = (typeof(args))params_void;
-	t_params		params = args->params;
-	t_philo			*philo = args->philo;
-	pthread_mutex_t	*left_fork = args->left_fork; //Si hay problema de líneas se podrían poner los tenedores en el t_philo
-	pthread_mutex_t	*right_fork = args->right_fork;
-
-	while (philo->dead == 0)
+	params = args->params;
+	philo = args->philo;
+	while (philo->dead == false)
 	{
-		eat(params, philo, left_fork, right_fork);
+		forks(*philo, args->left_fork, args->right_fork, true);
+		eat(params, philo);
+		forks(*philo, args->left_fork, args->right_fork, false);
 		think(3, *philo);
 		p_sleep(params.time_to_sleep, *philo);
 	}

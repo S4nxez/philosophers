@@ -79,8 +79,8 @@ This approach guarantees that no philosopher will starve while maintaining the p
 - ✅ Command line argument parsing
 - ✅ Basic philosopher actions (eat, think, sleep)
 - ✅ Timestamped logging system
-- 🔄 **In Progress**: Mutex implementation for forks
-- ⏳ **Pending**: Death detection mechanism
+- ✅ Mutex implementation for forks
+- 🔄 **Pending**: Death detection mechanism
 - ⏳ **Pending**: Meal counting system
 
 ## Building

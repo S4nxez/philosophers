@@ -44,7 +44,7 @@ $(NAME): $(OBJS)
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJS)
 
 $(OBJF):
-		@mkdir -p $(OBJ_DIR)/
+		@mkdir -p $(OBJ_DIR)
 
 # Rule to clean object files
 clean:

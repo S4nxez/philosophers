@@ -28,7 +28,8 @@ typedef struct s_philo
 	int				times_eaten;
 	long			last_meal;
 	size_t			start_time;
-	int				dead;
+	bool			dead;
+	long			born;
 	pthread_mutex_t	*write_lock;
 	pthread_mutex_t	*dead_lock;
 	pthread_mutex_t	*meal_lock;
@@ -52,8 +53,18 @@ typedef struct s_program
 	t_philo			*philos;
 }					t_program;
 
+typedef enum
+{
+	FORK,
+	EAT,
+	SLEEP,
+	THINK,
+	DIE
+}	philo_action_t;
+
 void	*philo_functions(void *params_void);
-long	philo_print(int action, int philo, int finished);
+long	philo_print(philo_action_t action, int philo);
 bool	is_number(char *arg);
+long	get_current_time(void);
 
 #endif

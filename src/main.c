@@ -16,28 +16,25 @@ void	launch_philo(t_params params, int i, t_philo *philo,
 	pthread_mutex_t *forks)
 {
 	philo->id = i;
-	struct {
+	struct
+	{
 		t_params		params;
 		t_philo			*philo;
 		pthread_mutex_t	*left_fork;
 		pthread_mutex_t	*right_fork;
-	} *thread_args = malloc(sizeof(*thread_args));
+	}					*thread_args = malloc(sizeof(*thread_args));
 	thread_args->params = params;
 	thread_args->philo = philo;
 	philo->times_eaten = 0;
 	philo->dead = 0;
 	philo->last_meal = 0;
+	philo->born = get_current_time();
 	pthread_mutex_init(&forks[i], NULL);
 	thread_args->left_fork = &forks[i];
 	thread_args->right_fork = &forks[i - 1];
 	pthread_create(&philo->thread, NULL, philo_functions, (void *)thread_args);
 }
 
-/**
- * input contains only numbers,
- * all bigger than 0 except the number of meals each philo needs to eat
- * not to more than 200 philos.
- */
 bool	parse_input(int argc, char **argv, t_params *params)
 {
 	int	i;
@@ -60,7 +57,6 @@ bool	parse_input(int argc, char **argv, t_params *params)
 	if (argc == 6)
 		params->max_meals = atoi(argv[5]);
 	return (true);
-
 }
 
 int	main(int argc, char **argv)
