@@ -24,16 +24,24 @@ long	philo_print(philo_action_t action, int philo)
 
 	ms = get_current_time();
 	if (action == FORK)
-		printf("[%ld] Philosopher %d has taken a fork\n", ms, philo);
+		printf("%ld %d has taken a fork\n", ms, philo);
 	else if (action == EAT)
-		printf("[%ld] Philosopher %d is eating\n", ms, philo);
+		printf("%ld %d is eating\n", ms, philo);
 	else if (action == SLEEP)
-		printf("[%ld] Philosopher %d is sleeping\n", ms, philo);
+		printf("%ld %d is sleeping\n", ms, philo);
 	else if (action == THINK)
-		printf("[%ld] Philosopher %d is thinking\n", ms, philo);
+		printf("%ld %d is thinking\n", ms, philo);
 	else if (action == DIE)
-		printf("[%ld] Philosopher %d died\n", ms, philo);
+		printf("%ld %d died\n", ms, philo);
 	return (ms);
+}
+
+long	get_philo_elapsed_time(t_philo philo)
+{
+	if (philo.last_meal != 0)
+		return (philo.last_meal - get_current_time());
+	else
+		return (philo.born - get_current_time());
 }
 
 long	get_current_time(void)

@@ -25,7 +25,7 @@ OBJ_DIR = obj
 SRC_DIR = src
 
 # Source files
-SRC = main philo_functions utils is_number
+SRC = main philo_functions utils is_number starving
 
 # Object files
 OBJS = $(addprefix obj/, $(addsuffix .o, $(SRC)))

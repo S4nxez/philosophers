@@ -23,6 +23,7 @@
 typedef struct s_philo
 {
 	pthread_t		thread;
+	pthread_t		death_thread;
 	int				id;
 	int				eating;
 	int				times_eaten;
@@ -62,9 +63,17 @@ typedef enum
 	DIE
 }	philo_action_t;
 
+typedef struct s_control
+{
+	bool			stop;
+	pthread_mutex_t	mutex;
+} t_control;
+
 void	*philo_functions(void *params_void);
+void	*death_detector_launcher(void *params_void);
 long	philo_print(philo_action_t action, int philo);
 bool	is_number(char *arg);
 long	get_current_time(void);
+long	get_philo_elapsed_time(t_philo philo);
 
 #endif

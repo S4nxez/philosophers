@@ -115,8 +115,6 @@ This runs 5 philosophers with:
 
 ## Next Steps
 
-1. Implement mutex locks for fork synchronization
-2. Add death detection monitoring thread
-3. Implement the 3-turn rotation strategy
-4. Add proper memory cleanup
-5. Optimize timing precision with `usleep()` instead of `sleep()`
+1. Add death detection monitoring thread
+2. Add proper memory cleanup
+3. Optimize timing precision with `usleep()` instead of `sleep()`

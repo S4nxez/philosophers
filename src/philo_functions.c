@@ -12,8 +12,8 @@
 
 #include "philo.h"
 
-void	forks(t_philo philo, pthread_mutex_t	*left_fork,
-	pthread_mutex_t	*right_fork, bool lock)
+void	forks(t_philo philo, pthread_mutex_t *left_fork,
+	pthread_mutex_t *right_fork, bool lock)
 {
 	if (lock)
 	{
@@ -29,24 +29,16 @@ void	forks(t_philo philo, pthread_mutex_t	*left_fork,
 	}
 }
 
-void	eat(t_params params, t_philo *philo)
+void	eat(t_params params, t_philo *philo, t_control *has_eaten)
 {
 	long	new_meal;
-	long	elapsed_time;
 
 	new_meal = philo_print(EAT, philo->id);
-	if (philo->last_meal != 0)
-		elapsed_time = philo->last_meal - new_meal;
-	else
-		elapsed_time = philo->born - get_current_time();
-	if (elapsed_time * (-1) > params.time_to_starve * 1000)
-	{
-		philo->dead = true;
-		philo_print(DIE, philo->id);
-		return ;
-	}
 	sleep(params.time_to_eat);
 	philo->times_eaten++;
+	pthread_mutex_lock(&has_eaten->mutex);
+	has_eaten->stop = true;
+	pthread_mutex_unlock(&has_eaten->mutex);
 	philo->last_meal = new_meal;
 }
 
@@ -64,25 +56,32 @@ void	p_sleep(int time_to_sleep, t_philo philo)
 
 void	*philo_functions(void *params_void)
 {
-	t_params		params;
-	t_philo			*philo;
+	t_params	params;
+	t_philo		*philo;
+	t_control	*has_eaten;
 
 	struct
 	{
 		t_params		params;
 		t_philo			*philo;
-		pthread_mutex_t	*left_fork;
+		pthread_mutex_t	*left_fork; //TODO meter en el philo
 		pthread_mutex_t	*right_fork;
+		t_control		*has_eaten;
+
 	} *args = (typeof(args))params_void;
 	params = args->params;
 	philo = args->philo;
-	while (philo->dead == false)
+	has_eaten = args->has_eaten;
+	while (!philo->dead)
 	{
 		forks(*philo, args->left_fork, args->right_fork, true);
-		eat(params, philo);
+		if (!philo->dead)
+			eat(params, philo, has_eaten);
 		forks(*philo, args->left_fork, args->right_fork, false);
-		think(3, *philo);
-		p_sleep(params.time_to_sleep, *philo);
+		if (!philo->dead)
+			think(3, *philo); //TODO modificar el tiempo
+		if (!philo->dead)
+			p_sleep(params.time_to_sleep, *philo);
 	}
 	free(args);
 	return (NULL);
