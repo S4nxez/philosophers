@@ -71,9 +71,10 @@ typedef struct s_control
 
 void	*philo_functions(void *params_void);
 void	*death_detector_launcher(void *params_void);
-long	philo_print(philo_action_t action, int philo);
+long	philo_print(philo_action_t action, int philo, t_program *program);
 bool	is_number(char *arg);
 long	get_current_time(void);
 long	get_philo_elapsed_time(t_philo philo);
+int		ft_atoi(const char *str);
 
 #endif

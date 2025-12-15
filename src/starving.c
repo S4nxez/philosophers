@@ -32,7 +32,7 @@ void	interrumpible_sleep(long sleep_ms, t_control *has_eaten, t_philo philo)
 	has_eaten->stop = false;
 }
 
-void	death_detector(t_params params, t_philo *philo)
+void	death_detector(t_params params, t_philo *philo, t_program *program)
 {
 	long	elapsed_time;
 
@@ -40,8 +40,10 @@ void	death_detector(t_params params, t_philo *philo)
 	elapsed_time = get_philo_elapsed_time(*philo);
 	if (elapsed_time * (-1) > params.time_to_starve * 1000)
 	{
-		philo->dead = true;
-		philo_print(DIE, philo->id);
+		pthread_mutex_lock(&program->dead_lock);
+		philo_print(DIE, philo->id, program);
+		program->dead_flag = true;
+		pthread_mutex_unlock(&program->dead_lock);
 	}
 }
 
@@ -50,6 +52,7 @@ void *death_detector_launcher(void *params_void)
 	t_control	*has_eaten;
 	t_params	params;
 	t_philo		*philo;
+	t_program	*program;
 
 	struct
 	{
@@ -58,13 +61,15 @@ void *death_detector_launcher(void *params_void)
 		pthread_mutex_t	*left_fork;
 		pthread_mutex_t	*right_fork;
 		t_control		*has_eaten;
+		t_program		*program;
 	} *args = (typeof(args))params_void;
 	params = args->params;
 	philo = args->philo;
 	has_eaten = args->has_eaten;
-	while (!philo->dead)
+	program = args->program;
+	while (!program->dead_flag)
 	{
-		death_detector(params, philo);
+		death_detector(params, philo, program);
 		interrumpible_sleep(params.time_to_starve, has_eaten, *philo);
 	}
 	return (NULL);

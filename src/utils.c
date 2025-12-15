@@ -18,20 +18,20 @@
  *
  * @return action timestamp
  */
-long	philo_print(philo_action_t action, int philo)
+long	philo_print(philo_action_t action, int philo, t_program *program)
 {
 	long	ms;
 
 	ms = get_current_time();
-	if (action == FORK)
+	if (action == FORK && !program->dead_flag)
 		printf("%ld %d has taken a fork\n", ms, philo);
-	else if (action == EAT)
+	else if (action == EAT && !program->dead_flag)
 		printf("%ld %d is eating\n", ms, philo);
-	else if (action == SLEEP)
+	else if (action == SLEEP && !program->dead_flag)
 		printf("%ld %d is sleeping\n", ms, philo);
-	else if (action == THINK)
+	else if (action == THINK && !program->dead_flag)
 		printf("%ld %d is thinking\n", ms, philo);
-	else if (action == DIE)
+	else if (action == DIE && !program->dead_flag)
 		printf("%ld %d died\n", ms, philo);
 	return (ms);
 }
