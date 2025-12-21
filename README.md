@@ -10,12 +10,12 @@ A C implementation of the classic dining philosophers problem using pthreads and
 ├── include/
 │   └── philo.h           # Header file with structures and function declarations
 ├── src/
+│   ├── ft_atoi.c         # String to integer conversion
+│   ├── is_number.c       # Input validation functions
 │   ├── main.c            # Main program logic and thread management
 │   ├── philo_functions.c # Philosopher behavior functions (eat, think, sleep)
-│   ├── utils.c           # Utility functions for printing and timing
-│   ├── ft_atoi.c         # String to integer conversion
 │   ├── starving.c        # Starving detection functions
-│   └── is_number.c       # Input validation functions
+│   └── utils.c           # Utility functions for printing and timing
 └── obj/                  # Compiled object files
 ```
 
@@ -25,6 +25,7 @@ The project currently includes:
 
 - **Main Program** (src/main.c): Handles argument parsing, philosopher thread creation and management
 - **Philosopher Functions** (src/philo_functions.c): Core philosopher behaviors (eating, thinking, sleeping)
+- **Deat detection** (src/starving): Thread for detecting when a philosopher dies
 - **Utilities** (src/utils.c): Helper functions for timestamped output
 - **Data Structures** (include/philo.h): Definitions for philosopher and program parameters
 
@@ -34,6 +35,7 @@ The project currently includes:
 - `philo_functions`: Main philosopher routine executed by each thread
 - `philo_print`: Thread-safe printing with timestamps
 - `parse_input`: Validates command line arguments
+- `death_detector`: Checks if a philosopher died of starvation
 
 ## Usage
 
@@ -55,7 +57,8 @@ The project currently includes:
 - ✅ Basic philosopher actions (eat, think, sleep)
 - ✅ Timestamped logging system
 - ✅ Mutex implementation for forks
-- 🔄 **Pending**: Death detection mechanism
+- ✅ Death detection mechanism
+- 🔄 **In progress**:Memory cleanup on program termination
 - ⏳ **Pending**: Meal counting system
 
 ## Building
@@ -84,12 +87,5 @@ This runs 5 philosophers with:
 
 ## Known Issues
 
-- Memory leaks in thread argument allocation (to be fixed)
-- Race conditions in output printing (implementing mutex locks)
-- No death detection mechanism yet implemented
-
-## Next Steps
-
-1. Add death detection monitoring thread
-2. Add proper memory cleanup
-3. Optimize timing precision with `usleep()` instead of `sleep()`
+- Possible race conditions in output printing (implementing mutex locks)
+- Threads termination and memory clean when a philosopher dies
