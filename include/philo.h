@@ -31,9 +31,13 @@ typedef struct s_philo
 	size_t			start_time;
 	bool			dead;
 	long			born;
+	int				left;
+	int				right;
 	pthread_mutex_t	*write_lock;
 	pthread_mutex_t	*dead_lock;
 	pthread_mutex_t	*meal_lock;
+	pthread_mutex_t	*right_fork;
+	pthread_mutex_t	*left_fork;
 }					t_philo;
 
 typedef struct s_params
@@ -45,33 +49,49 @@ typedef struct s_params
 	int				max_meals;
 }					t_params;
 
+typedef enum e_fork_state
+{
+	FREE,
+	TAKEN
+}	t_fork_state;
+
 typedef struct s_program
 {
 	int				dead_flag;
 	pthread_mutex_t	dead_lock;
 	pthread_mutex_t	meal_lock;
 	pthread_mutex_t	write_lock;
+	pthread_mutex_t	forks_state_mutex;
+	t_fork_state	*fork_state;
 	t_philo			*philos;
 }					t_program;
 
-typedef enum
+typedef enum e_philo_action
 {
 	FORK,
 	EAT,
 	SLEEP,
 	THINK,
 	DIE
-}	philo_action_t;
+}	t_philo_action;
 
 typedef struct s_control
 {
 	bool			stop;
 	pthread_mutex_t	mutex;
-} t_control;
+}	t_control;
+
+typedef struct s_thread_args
+{
+	t_params		params;
+	t_philo			*philo;
+	t_control		*has_eaten;
+	t_program		*program;
+}	t_thread_args;
 
 void	*philo_functions(void *params_void);
 void	*death_detector_launcher(void *params_void);
-long	philo_print(philo_action_t action, int philo, t_program *program);
+long	philo_print(t_philo_action action, int philo, t_program *program);
 bool	is_number(char *arg);
 long	get_current_time(void);
 long	get_philo_elapsed_time(t_philo philo);

@@ -15,16 +15,10 @@
 void	launch_philo(t_params params, int i, t_philo *philo,
 	pthread_mutex_t *forks, t_control *has_eaten, t_program *program)
 {
+	t_thread_args	*thread_args;
+
 	philo->id = i;
-	struct
-	{
-		t_params		params;
-		t_philo			*philo;
-		pthread_mutex_t	*left_fork;
-		pthread_mutex_t	*right_fork;
-		t_control		*has_eaten;
-		t_program		*program;
-	}					*thread_args = malloc(sizeof(*thread_args));
+	thread_args = malloc(sizeof(t_thread_args));
 	thread_args->params = params;
 	thread_args->philo = philo;
 	philo->times_eaten = 0;
@@ -32,11 +26,14 @@ void	launch_philo(t_params params, int i, t_philo *philo,
 	philo->last_meal = 0;
 	philo->born = get_current_time();
 	pthread_mutex_init(&forks[i], NULL);
-	thread_args->left_fork = &forks[i];
-	thread_args->right_fork = &forks[i - 1]; //TODO gestionar aquí primer y último
+	philo->left_fork = &forks[i];
+	if (i + 1 == params.philo_number)
+		philo->right_fork = &forks[0];
+	else
+		philo->right_fork = &forks[i + 1];
 	pthread_mutex_init(&has_eaten[i].mutex, NULL);
-	has_eaten[i-1].stop = false;
-	thread_args->has_eaten = &has_eaten[i-1];
+	has_eaten[i - 1].stop = false;
+	thread_args->has_eaten = &has_eaten[i - 1];
 	thread_args->program = program;
 	pthread_create(&philo->thread, NULL, philo_functions, (void *)thread_args);
 	pthread_create(&philo->death_thread, NULL, death_detector_launcher,
@@ -59,9 +56,9 @@ bool	parse_input(int argc, char **argv, t_params *params)
 	if (ft_atoi(argv[1]) > 200)
 		return (false);
 	params->philo_number = ft_atoi(argv[1]);
-	params->time_to_starve = ft_atoi(argv[2]);
-	params->time_to_eat = ft_atoi(argv[3]);
-	params->time_to_sleep = ft_atoi(argv[4]);
+	params->time_to_starve = 1000 * ft_atoi(argv[2]);
+	params->time_to_eat = 1000 * ft_atoi(argv[3]);
+	params->time_to_sleep = 1000 * ft_atoi(argv[4]);
 	if (argc == 6)
 		params->max_meals = ft_atoi(argv[5]);
 	return (true);
@@ -84,23 +81,39 @@ int	main(int argc, char **argv)
 	program = malloc(sizeof(t_program));
 	program->dead_flag = false;
 	pthread_mutex_init(&program->dead_lock, NULL);
+	program->fork_state = malloc(sizeof(t_fork_state) * params.philo_number);
+	memset(program->fork_state, FREE, sizeof(t_fork_state)
+		* params.philo_number);
+	pthread_mutex_init(&program->forks_state_mutex, NULL);
 	i = 0;
 	while (i < params.philo_number)
 	{
+		philos[i].left = i;
+		if (i + 1 == params.philo_number)
+			philos[i].right = 0;
+		else
+			philos[i].right = i + 1;
 		launch_philo(params, i + 1, &philos[i], forks, has_eaten, program);
-		philos[i].id = i + 1;
 		i++;
 	}
 	i = 0;
+	while (!program->dead_flag)
+		usleep(500);
 	while (i < params.philo_number)
 	{
 		pthread_join(philos[i].thread, NULL);
 		pthread_join(philos[i].death_thread, NULL);
+		i++;
+	}
+	while (i < params.philo_number)
+	{
 		pthread_mutex_destroy(&forks[i]);
 		pthread_mutex_destroy(&has_eaten[i].mutex);
 		i++;
 	}
 	pthread_mutex_destroy(&program->dead_lock);
+	free(program->fork_state);
+	free(program);
 	free(forks);
 	free(has_eaten);
 	free(philos);
