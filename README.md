@@ -58,8 +58,9 @@ The project currently includes:
 - ✅ Timestamped logging system
 - ✅ Mutex implementation for forks
 - ✅ Death detection mechanism
-- 🔄 **In progress**:Memory cleanup on program termination
-- ⏳ **Pending**: Meal counting system
+- ✅ Memory cleanup on program termination
+- 🔄 **In progress**: Meal counting system
+- ⏳ **Pending**: Exhaustive testing
 
 ## Building
 
@@ -88,4 +89,4 @@ This runs 5 philosophers with:
 ## Known Issues
 
 - Possible race conditions in output printing (implementing mutex locks)
-- Threads termination and memory clean when a philosopher dies
+- Circular wait when testing on other devices

@@ -12,41 +12,39 @@
 
 #include "philo.h"
 
-void	forks(t_philo philo, bool lock, t_program *program)
+void	use_forks(t_philo philo, t_program *program)
 {
-	if (lock)
-	{
-		while (true)
-		{
-			pthread_mutex_lock(&program->forks_state_mutex);
-			if (program->fork_state[philo.right] == FREE
-				&& program->fork_state[philo.left] == FREE)
-			{
-				program->fork_state[philo.right] = TAKEN;
-				program->fork_state[philo.left] = TAKEN;
-				pthread_mutex_unlock(&program->forks_state_mutex);
-				pthread_mutex_lock(philo.left_fork);
-				philo_print(FORK, philo.id, program);
-				pthread_mutex_lock(philo.right_fork);
-				philo_print(FORK, philo.id, program);
-				break ;
-			}
-			else
-			{
-				pthread_mutex_unlock(&program->forks_state_mutex);
-				usleep(500);
-			}
-		}
-	}
-	else
+	while (true)
 	{
 		pthread_mutex_lock(&program->forks_state_mutex);
-		program->fork_state[philo.right] = FREE;
-		program->fork_state[philo.left] = FREE;
-		pthread_mutex_unlock(&program->forks_state_mutex);
-		pthread_mutex_unlock(philo.left_fork);
-		pthread_mutex_unlock(philo.right_fork);
+		if (program->fork_state[philo.right] == FREE
+			&& program->fork_state[philo.left] == FREE)
+		{
+			pthread_mutex_lock(philo.left_fork);
+			pthread_mutex_lock(philo.right_fork);
+			program->fork_state[philo.right] = TAKEN;
+			program->fork_state[philo.left] = TAKEN;
+			pthread_mutex_unlock(&program->forks_state_mutex);
+			philo_print(FORK, philo.id, program);
+			philo_print(FORK, philo.id, program);
+			break ;
+		}
+		else
+		{
+			pthread_mutex_unlock(&program->forks_state_mutex);
+			usleep(500);
+		}
 	}
+}
+
+void	free_forks(t_philo philo, t_program *program)
+{
+	pthread_mutex_unlock(philo.left_fork);
+	pthread_mutex_unlock(philo.right_fork);
+	pthread_mutex_lock(&program->forks_state_mutex);
+	program->fork_state[philo.right] = FREE;
+	program->fork_state[philo.left] = FREE;
+	pthread_mutex_unlock(&program->forks_state_mutex);
 }
 
 void	eat(t_params params, t_philo *philo, t_control *has_eaten,
@@ -58,11 +56,6 @@ void	eat(t_params params, t_philo *philo, t_control *has_eaten,
 	pthread_mutex_lock(&has_eaten->mutex);
 	has_eaten->stop = true;
 	pthread_mutex_unlock(&has_eaten->mutex);
-}
-
-void	think(t_philo philo, t_program *program)
-{
-	philo_print(THINK, philo.id, program);
 }
 
 void	p_sleep(int time_to_sleep, t_philo philo, t_program *program)
@@ -86,12 +79,12 @@ void	*philo_functions(void *params_void)
 	program = thread_args->program;
 	while (!program->dead_flag)
 	{
-		forks(*philo, true, program);
+		use_forks(*philo, program);
 		if (!program->dead_flag)
 			eat(params, philo, has_eaten, program);
-		forks(*philo, false, program);
+		free_forks(*philo, program);
 		if (!program->dead_flag)
-			think(*philo, program);
+			philo_print(THINK, philo->id, program);
 		if (!program->dead_flag)
 			p_sleep(params.time_to_sleep, *philo, program);
 	}

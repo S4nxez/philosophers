@@ -12,12 +12,13 @@
 
 #include "philo.h"
 
-void	interrumpible_sleep(long sleep_ms, t_control *has_eaten, t_philo philo)
+void	interrumpible_sleep(long sleep_ms, t_control *has_eaten, t_philo philo,
+		t_program *program)
 {
 	long	elapsed_time;
 
 	elapsed_time = get_philo_elapsed_time(philo);
-	while (elapsed_time < sleep_ms)
+	while (elapsed_time < sleep_ms && !program->dead_flag)
 	{
 		pthread_mutex_lock(&has_eaten->mutex);
 		if (has_eaten->stop)
@@ -63,7 +64,7 @@ void	*death_detector_launcher(void *params_void)
 	while (!program->dead_flag)
 	{
 		death_detector(params, philo, program);
-		interrumpible_sleep(params.time_to_starve, has_eaten, *philo);
+		interrumpible_sleep(params.time_to_starve, has_eaten, *philo, program);
 	}
 	return (NULL);
 }
