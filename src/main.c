@@ -13,14 +13,10 @@
 #include "philo.h"
 
 void	launch_philo(t_params params, int i, t_philo *philo,
-	pthread_mutex_t *forks, t_control *has_eaten, t_program *program)
+	pthread_mutex_t *forks, t_control *has_eaten,
+	t_thread_args *thread_args)
 {
-	t_thread_args	*thread_args;
-
 	philo->id = i;
-	thread_args = malloc(sizeof(t_thread_args));
-	thread_args->params = params;
-	thread_args->philo = philo;
 	philo->times_eaten = 0;
 	philo->dead = 0;
 	philo->last_meal = 0;
@@ -34,7 +30,6 @@ void	launch_philo(t_params params, int i, t_philo *philo,
 	pthread_mutex_init(&has_eaten[i].mutex, NULL);
 	has_eaten[i - 1].stop = false;
 	thread_args->has_eaten = &has_eaten[i - 1];
-	thread_args->program = program;
 	pthread_create(&philo->thread, NULL, philo_functions, (void *)thread_args);
 	pthread_create(&philo->death_thread, NULL, death_detector_launcher,
 		(void *)thread_args);
@@ -72,6 +67,7 @@ int	main(int argc, char **argv)
 	int				i;
 	t_control		*has_eaten;
 	t_program		*program;
+	t_thread_args	*thread_args;
 
 	if (!parse_input(argc, argv, &params))
 		return (1);
@@ -86,36 +82,29 @@ int	main(int argc, char **argv)
 		* params.philo_number);
 	pthread_mutex_init(&program->forks_state_mutex, NULL);
 	i = 0;
+	thread_args = malloc(sizeof(t_thread_args) * params.philo_number);
 	while (i < params.philo_number)
 	{
+		thread_args[i].params = params;
+		thread_args[i].philo = &philos[i];
+		thread_args[i].program = program;
 		philos[i].left = i;
 		if (i + 1 == params.philo_number)
 			philos[i].right = 0;
 		else
 			philos[i].right = i + 1;
-		launch_philo(params, i + 1, &philos[i], forks, has_eaten, program);
+		launch_philo(params, i + 1, &philos[i], forks, has_eaten, &thread_args[i]);
 		i++;
 	}
 	i = 0;
+	pthread_mutex_lock(&program->dead_lock);
 	while (!program->dead_flag)
+	{
 		usleep(500);
-	while (i < params.philo_number)
-	{
-		pthread_join(philos[i].thread, NULL);
-		pthread_join(philos[i].death_thread, NULL);
-		i++;
+		pthread_mutex_unlock(&program->dead_lock);
 	}
-	while (i < params.philo_number)
-	{
-		pthread_mutex_destroy(&forks[i]);
-		pthread_mutex_destroy(&has_eaten[i].mutex);
-		i++;
-	}
-	pthread_mutex_destroy(&program->dead_lock);
-	free(program->fork_state);
-	free(program);
-	free(forks);
-	free(has_eaten);
-	free(philos);
+	join_threads(philos, params);
+	destroy_mutex(params, forks, has_eaten, program);
+	free_mallocs(program, forks, has_eaten, thread_args, philos);
 	return (0);
 }

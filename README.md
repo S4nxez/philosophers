@@ -90,3 +90,6 @@ This runs 5 philosophers with:
 
 - Possible race conditions in output printing (implementing mutex locks)
 - Circular wait when testing on other devices
+- Program does not finish when a philo dies sometimes
+- Leak when when testing with only one philosopher.
+- Makefile rules not working correctly

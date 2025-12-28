@@ -96,5 +96,10 @@ bool	is_number(char *arg);
 long	get_current_time(void);
 long	get_philo_elapsed_time(t_philo philo);
 int		ft_atoi(const char *str);
+void	free_mallocs(t_program *program, pthread_mutex_t *forks,
+			t_control *has_eaten, t_thread_args *thread_args, t_philo *philos);
+void	destroy_mutex(t_params params, pthread_mutex_t *forks,
+			t_control *has_eaten, t_program *program);
+void	join_threads(t_philo *philos, t_params params);
 
 #endif

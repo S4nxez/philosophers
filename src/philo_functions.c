@@ -42,6 +42,8 @@ void	free_forks(t_philo philo, t_program *program)
 	pthread_mutex_unlock(philo.left_fork);
 	pthread_mutex_unlock(philo.right_fork);
 	pthread_mutex_lock(&program->forks_state_mutex);
+	//TODO The thread will wait to free the forks, if another thread is trying
+	//to take them it won't free the forks
 	program->fork_state[philo.right] = FREE;
 	program->fork_state[philo.left] = FREE;
 	pthread_mutex_unlock(&program->forks_state_mutex);
@@ -88,6 +90,5 @@ void	*philo_functions(void *params_void)
 		if (!program->dead_flag)
 			p_sleep(params.time_to_sleep, *philo, program);
 	}
-	free(thread_args);
 	return (NULL);
 }
