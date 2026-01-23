@@ -37,7 +37,7 @@ void	death_detector(t_params params, t_philo *philo, t_program *program)
 {
 	long	elapsed_time;
 
-	usleep(params.time_to_starve);
+	usleep(100);
 	elapsed_time = get_philo_elapsed_time(*philo);
 	if (elapsed_time * (-1) > params.time_to_starve)
 	{

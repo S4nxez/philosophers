@@ -51,7 +51,7 @@ bool	parse_input(int argc, char **argv, t_params *params)
 	if (ft_atoi(argv[1]) > 200)
 		return (false);
 	params->philo_number = ft_atoi(argv[1]);
-	params->time_to_starve = 1000 * ft_atoi(argv[2]);
+	params->time_to_starve =  ft_atoi(argv[2]);
 	params->time_to_eat = 1000 * ft_atoi(argv[3]);
 	params->time_to_sleep = 1000 * ft_atoi(argv[4]);
 	if (argc == 6)
