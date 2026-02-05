@@ -18,11 +18,9 @@
  *
  * @return action timestamp
  */
-long	philo_print(t_philo_action action, int philo, t_program *program)
+long	philo_print(t_philo_action action, int philo, t_program *program,
+		long ms)
 {
-	long	ms;
-
-	ms = get_current_time();
 	if (action == FORK && !program->dead_flag)
 		printf("%ld %d has taken a fork\n", ms, philo);
 	else if (action == EAT && !program->dead_flag)
@@ -39,9 +37,9 @@ long	philo_print(t_philo_action action, int philo, t_program *program)
 long	get_philo_elapsed_time(t_philo philo)
 {
 	if (philo.last_meal != 0)
-		return (philo.last_meal - get_current_time());
+		return (get_current_time() - philo.last_meal);
 	else
-		return (philo.born - get_current_time());
+		return (get_current_time() - philo.born);
 }
 
 long	get_current_time(void)

@@ -12,37 +12,16 @@
 
 #include "philo.h"
 
-void	interrumpible_sleep(long sleep_ms, t_control *has_eaten, t_philo philo,
-		t_program *program)
-{
-	long	elapsed_time;
-
-	elapsed_time = get_philo_elapsed_time(philo);
-	while (elapsed_time < sleep_ms && !program->dead_flag)
-	{
-		pthread_mutex_lock(&has_eaten->mutex);
-		if (has_eaten->stop)
-		{
-			pthread_mutex_unlock(&has_eaten->mutex);
-			break ;
-		}
-		pthread_mutex_unlock(&has_eaten->mutex);
-		usleep(500);
-		elapsed_time = get_philo_elapsed_time(philo);
-	}
-	has_eaten->stop = false;
-}
-
 void	death_detector(t_params params, t_philo *philo, t_program *program)
 {
 	long	elapsed_time;
 
-	usleep(100);
+	usleep(50);
 	elapsed_time = get_philo_elapsed_time(*philo);
-	if (elapsed_time * (-1) > params.time_to_starve)
+	if (elapsed_time > params.time_to_starve)
 	{
 		pthread_mutex_lock(&program->dead_lock);
-		philo_print(DIE, philo->id, program);
+		philo_print(DIE, philo->id, program, get_current_time());
 		program->dead_flag = true;
 		pthread_mutex_unlock(&program->dead_lock);
 	}
@@ -50,7 +29,6 @@ void	death_detector(t_params params, t_philo *philo, t_program *program)
 
 void	*death_detector_launcher(void *params_void)
 {
-	t_control		*has_eaten;
 	t_params		params;
 	t_philo			*philo;
 	t_program		*program;
@@ -59,12 +37,11 @@ void	*death_detector_launcher(void *params_void)
 	thread_args = (typeof(thread_args))params_void;
 	params = thread_args->params;
 	philo = thread_args->philo;
-	has_eaten = thread_args->has_eaten;
 	program = thread_args->program;
 	while (!program->dead_flag)
 	{
 		death_detector(params, philo, program);
-		interrumpible_sleep(params.time_to_starve, has_eaten, *philo, program);
+		usleep(100);
 	}
 	return (NULL);
 }

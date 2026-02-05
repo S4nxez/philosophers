@@ -91,7 +91,7 @@ typedef struct s_thread_args
 
 void	*philo_functions(void *params_void);
 void	*death_detector_launcher(void *params_void);
-long	philo_print(t_philo_action action, int philo, t_program *program);
+long	philo_print(t_philo_action action, int philo, t_program *program, long ms);
 bool	is_number(char *arg);
 long	get_current_time(void);
 long	get_philo_elapsed_time(t_philo philo);

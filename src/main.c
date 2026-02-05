@@ -27,7 +27,7 @@ void	launch_philo(t_params params, int i, t_philo *philo,
 		philo->right_fork = &forks[0];
 	else
 		philo->right_fork = &forks[i + 1];
-	pthread_mutex_init(&has_eaten[i].mutex, NULL);
+	pthread_mutex_init(&has_eaten[i - 1].mutex, NULL);
 	has_eaten[i - 1].stop = false;
 	thread_args->has_eaten = &has_eaten[i - 1];
 	pthread_create(&philo->thread, NULL, philo_functions, (void *)thread_args);
@@ -97,11 +97,16 @@ int	main(int argc, char **argv)
 		i++;
 	}
 	i = 0;
-	pthread_mutex_lock(&program->dead_lock);
-	while (!program->dead_flag)
+	while (1)
 	{
-		usleep(500);
+		pthread_mutex_lock(&program->dead_lock);
+		if (program->dead_flag)
+		{
+			pthread_mutex_unlock(&program->dead_lock);
+			break ;
+		}
 		pthread_mutex_unlock(&program->dead_lock);
+		usleep(100);
 	}
 	join_threads(philos, params);
 	destroy_mutex(params, forks, has_eaten, program);
