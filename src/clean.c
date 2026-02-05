@@ -15,7 +15,6 @@
 void	free_mallocs(t_program *program, pthread_mutex_t *forks,
 		t_control *has_eaten, t_thread_args *thread_args, t_philo *philos)
 {
-	free(program->fork_state);
 	free(program);
 	free(forks);
 	free(has_eaten);

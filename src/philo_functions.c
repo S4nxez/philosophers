@@ -12,41 +12,18 @@
 
 #include "philo.h"
 
-void	use_forks(t_philo philo, t_program *program)
+void use_forks(t_philo philo, t_program *program)
 {
-	while (true)
-	{
-		pthread_mutex_lock(&program->forks_state_mutex);
-		if (program->fork_state[philo.right] == FREE
-			&& program->fork_state[philo.left] == FREE)
-		{
-			pthread_mutex_lock(philo.left_fork);
-			pthread_mutex_lock(philo.right_fork);
-			program->fork_state[philo.right] = TAKEN;
-			program->fork_state[philo.left] = TAKEN;
-			pthread_mutex_unlock(&program->forks_state_mutex);
-			philo_print(FORK, philo.id, program, get_current_time());
-			philo_print(FORK, philo.id, program, get_current_time());
-			break ;
-		}
-		else
-		{
-			pthread_mutex_unlock(&program->forks_state_mutex);
-			usleep(500);
-		}
-	}
+	pthread_mutex_lock(philo.left_fork);
+	pthread_mutex_lock(philo.right_fork);
+	philo_print(FORK, philo.id, program, get_current_time());
+	philo_print(FORK, philo.id, program, get_current_time());
 }
 
-void	free_forks(t_philo philo, t_program *program)
+void free_forks(t_philo philo)
 {
 	pthread_mutex_unlock(philo.left_fork);
 	pthread_mutex_unlock(philo.right_fork);
-	pthread_mutex_lock(&program->forks_state_mutex);
-	//TODO The thread will wait to free the forks, if another thread is trying
-	//to take them it won't free the forks
-	program->fork_state[philo.right] = FREE;
-	program->fork_state[philo.left] = FREE;
-	pthread_mutex_unlock(&program->forks_state_mutex);
 }
 
 void	eat(t_params params, t_philo *philo, t_control *has_eaten,
@@ -87,7 +64,7 @@ void	*philo_functions(void *params_void)
 		use_forks(*philo, program);
 		if (!program->dead_flag)
 			eat(params, philo, has_eaten, program);
-		free_forks(*philo, program);
+		free_forks(*philo);
 		if (!program->dead_flag)
 			p_sleep(params.time_to_sleep, *philo, program);
 		if (!program->dead_flag)

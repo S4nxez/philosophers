@@ -62,7 +62,6 @@ typedef struct s_program
 	pthread_mutex_t	meal_lock;
 	pthread_mutex_t	write_lock;
 	pthread_mutex_t	forks_state_mutex;
-	t_fork_state	*fork_state;
 	t_philo			*philos;
 }					t_program;
 

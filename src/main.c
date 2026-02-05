@@ -77,9 +77,6 @@ int	main(int argc, char **argv)
 	program = malloc(sizeof(t_program));
 	program->dead_flag = false;
 	pthread_mutex_init(&program->dead_lock, NULL);
-	program->fork_state = malloc(sizeof(t_fork_state) * params.philo_number);
-	memset(program->fork_state, FREE, sizeof(t_fork_state)
-		* params.philo_number);
 	pthread_mutex_init(&program->forks_state_mutex, NULL);
 	i = 0;
 	thread_args = malloc(sizeof(t_thread_args) * params.philo_number);
