@@ -52,8 +52,30 @@ bool	parse_input(int argc, char **argv, t_params *params)
 	params->time_to_starve =  ft_atoi(argv[2]);
 	params->time_to_eat = 1000 * ft_atoi(argv[3]);
 	params->time_to_sleep = 1000 * ft_atoi(argv[4]);
+	params->max_meals = -1;
 	if (argc == 6)
 		params->max_meals = ft_atoi(argv[5]);
+	return (true);
+}
+
+static bool	all_ate_enough(t_program *program, t_params params)
+{
+	int	i;
+
+	if (params.max_meals == -1)
+		return (false);
+	i = 0;
+	pthread_mutex_lock(&program->meal_lock);
+	while (i < params.philo_number)
+	{
+		if (program->philos[i].times_eaten < params.max_meals)
+		{
+			pthread_mutex_unlock(&program->meal_lock);
+			return (false);
+		}
+		i++;
+	}
+	pthread_mutex_unlock(&program->meal_lock);
 	return (true);
 }
 
@@ -88,6 +110,7 @@ int	main(int argc, char **argv)
 		i++;
 	}
 	program->start_time = get_current_time();
+	program->philos = philos;
 	i = 0;
 	while (i < params.philo_number)
 	{
@@ -112,6 +135,13 @@ int	main(int argc, char **argv)
 			break ;
 		}
 		pthread_mutex_unlock(&program->dead_lock);
+		if (all_ate_enough(program, params))
+		{
+			pthread_mutex_lock(&program->dead_lock);
+			program->dead_flag = true;
+			pthread_mutex_unlock(&program->dead_lock);
+			break ;
+		}
 		usleep(100);
 	}
 	join_threads(philos, params);

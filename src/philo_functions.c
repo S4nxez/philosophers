@@ -34,7 +34,9 @@ void	eat(t_params params, t_philo *philo, t_control *has_eaten,
 	pthread_mutex_unlock(&program->meal_lock);
 	philo_print(EAT, philo->id, program, philo->last_meal);
 	ft_usleep(params.time_to_eat);
+	pthread_mutex_lock(&program->meal_lock);
 	philo->times_eaten++;
+	pthread_mutex_unlock(&program->meal_lock);
 	pthread_mutex_lock(&has_eaten->mutex);
 	has_eaten->stop = true;
 	pthread_mutex_unlock(&has_eaten->mutex);
