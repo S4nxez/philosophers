@@ -50,7 +50,11 @@ bool	parse_input(int argc, char **argv, t_params *params)
 			return (false);
 		i++;
 	}
-	if (ft_atoi(argv[1]) > 200)
+	if (ft_atoi(argv[1]) > 200 || ft_atoi(argv[1]) <= 0)
+		return (false);
+	if (ft_atoi(argv[2]) <= 0 || ft_atoi(argv[3]) <= 0)
+		return (false);
+	if (ft_atoi(argv[4]) <= 0)
 		return (false);
 	params->philo_number = ft_atoi(argv[1]);
 	params->time_to_starve = ft_atoi(argv[2]);

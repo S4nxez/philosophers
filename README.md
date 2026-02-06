@@ -1,95 +1,115 @@
-# Philosophers Project
+_Este proyecto ha sido creado como parte del currículo de 42 por dansanc3, S4nxez._
 
-A C implementation of the classic dining philosophers problem using pthreads and mutexes.
+# Philosophers (Dining Philosophers) — Proyecto 42
 
-## Project Structure
+## Descripción
 
-```
-.
-├── Makefile
-├── include/
-│   └── philo.h           # Header file with structures and function declarations
-├── src/
-│   ├── ft_atoi.c         # String to integer conversion
-│   ├── is_number.c       # Input validation functions
-│   ├── main.c            # Main program logic and thread management
-│   ├── philo_functions.c # Philosopher behavior functions (eat, think, sleep)
-│   ├── starving.c        # Starving detection functions
-│   └── utils.c           # Utility functions for printing and timing
-└── obj/                  # Compiled object files
-```
+Este repositorio contiene una implementación en C del clásico problema de los
+"dining philosophers" (filósofos comensales) usando `pthread` y `mutex`. El
+objetivo del proyecto es coordinar la concurrencia entre varios hilos (filósofos)
+que comparten recursos limitados (tenedores) evitando condiciones de carrera y
+deadlocks, y detectando la inanición (muertes) según parámetros temporales.
 
-## Current Implementation
+Breve visión general:
 
-The project currently includes:
+- Cada filósofo es un hilo que repite el ciclo: tomar tenedores → comer →
+  dormir → pensar.
+- Los tenedores están protegidos por `pthread_mutex_t`.
+- Hay un detector de muerte por filósofo que vigila `time_to_die`.
+- El programa soporta un parámetro opcional para limitar el número de comidas.
 
-- **Main Program** (src/main.c): Handles argument parsing, philosopher thread creation and management
-- **Philosopher Functions** (src/philo_functions.c): Core philosopher behaviors (eating, thinking, sleeping)
-- **Deat detection** (src/starving): Thread for detecting when a philosopher dies
-- **Utilities** (src/utils.c): Helper functions for timestamped output
-- **Data Structures** (include/philo.h): Definitions for philosopher and program parameters
+## Instrucciones
 
-### Key Functions
+Requisitos mínimos:
 
-- `launch_philo`: Creates and launches individual philosopher threads
-- `philo_functions`: Main philosopher routine executed by each thread
-- `philo_print`: Thread-safe printing with timestamps
-- `parse_input`: Validates command line arguments
-- `death_detector`: Checks if a philosopher died of starvation
+- Compilador `gcc` en un entorno POSIX (se recomienda WSL en Windows)
+- `make` (opcional, se incluye `Makefile`)
 
-## Usage
-
-```bash
-./philo number_of_philosophers time_to_die time_to_eat time_to_sleep [number_of_times_each_philosopher_must_eat]
-```
-
-### Parameters:
-- `number_of_philosophers`: Number of philosophers (max 200)
-- `time_to_die`: Time in milliseconds before a philosopher dies of starvation
-- `time_to_eat`: Time in milliseconds a philosopher takes to eat
-- `time_to_sleep`: Time in milliseconds a philosopher sleeps
-- `number_of_times_each_philosopher_must_eat`: Optional parameter for meal limit
-
-## Current Status
-
-- ✅ Basic thread creation and management
-- ✅ Command line argument parsing
-- ✅ Basic philosopher actions (eat, think, sleep)
-- ✅ Timestamped logging system
-- ✅ Mutex implementation for forks
-- ✅ Death detection mechanism
-- ✅ Memory cleanup on program termination
-- 🔄 **In progress**: Meal counting system
-- ⏳ **Pending**: Exhaustive testing
-
-## Building
-
-Use the provided Makefile to compile the project:
+Compilar (desde la raíz del repo):
 
 ```bash
 make
 ```
 
-This will generate the `philo` executable in the project root directory.
-
-## Testing
-
-Example execution:
+Si no dispone de `make` puede compilar manualmente:
 
 ```bash
-./philo 5 800 200 200 7
+gcc -Wall -Wextra -Werror -g3 -Iinclude/ src/*.c -lpthread -o philo
 ```
 
-This runs 5 philosophers with:
-- 800ms time to die
-- 200ms eating time
-- 200ms sleeping time
-- Each philosopher must eat 7 times (optional)
+Ejecutar:
 
-## Known Issues
+```bash
+./philo number_of_philosophers time_to_die time_to_eat time_to_sleep [max_meals]
+```
 
-- Possible race conditions in output printing (implementing mutex locks)
-- Circular wait when testing on other devices
-- Program does not finish when a philo dies sometimes
-- Leak when when testing with only one philosopher.
-- Makefile rules not working correctly
+Parámetros:
+
+- `number_of_philosophers` — número de filósofos (máx. 200 por validación)
+- `time_to_die` — tiempo en ms antes de que un filósofo muera sin comer
+- `time_to_eat` — tiempo en ms que tarda en comer
+- `time_to_sleep` — tiempo en ms que tarda en dormir
+- `max_meals` — (opcional) número de veces que cada filósofo debe comer; si
+  se especifica termina cuando todos lo hayan cumplido
+
+Recomendación (Windows): ejecutar desde WSL para disponer de pthreads y un
+entorno POSIX compatible.
+
+Ejemplo:
+
+```bash
+./philo 4 410 200 200
+./philo 4 410 200 200 7   # termina cuando cada filósofo coma 7 veces
+```
+
+## Recursos
+
+Referencias y lecturas recomendadas sobre el problema y concurrencia:
+
+- Artículo clásico: Dijkstra, "Dining Philosophers Problem" (1971)
+- Pthreads documentation: https://man7.org/linux/man-pages/man7/pthread.7.html
+- Tutoriales sobre concurrencia en C y mutexes
+
+Uso de IA en el proyecto:
+
+- Se ha utilizado asistencia de IA (ChatGPT) para análisis, depuración y
+  refactorizaciones mínimas con el objetivo de corregir bugs de sincronización
+  y adaptar el código para pasar la normativa de estilo (Norminette). La IA se
+  usó para: revisar el flujo de ejecución, proponer cambios para evitar
+  condiciones de carrera, implementar una función de `ft_usleep` más precisa y
+  refactorizar la inicialización de estructuras para reducir parámetros de
+  funciones. Ninguna parte crítica del algoritmo (la lógica de toma/soltado de
+  tenedores y la detección de muerte) fue alterada conceptualmente; los
+  cambios fueron mínimos y documentados en los comentarios de los commits.
+
+## Estructura del proyecto
+
+```text
+. /
+├── Makefile
+├── README.md
+├── include/
+│   └── philo.h
+├── src/
+│   ├── ft_atoi.c
+│   ├── is_number.c
+│   ├── main.c
+│   ├── main_helpers.c
+│   ├── forks.c
+│   ├── philo_functions.c
+│   ├── starving.c
+│   ├── utils.c
+│   └── clean.c
+└── obj/
+```
+
+## Estado actual
+
+- ✅ Compilación en WSL con `gcc` (`-lpthread`)
+- ✅ Detección de muerte y conteo de comidas (opcional)
+- ✅ Pruebas manuales de casos críticos (pares/impares) realizadas
+- ✅ Formateo y normas: Norminette pasada
+
+Si desea que actualice o añada más documentación (por ejemplo pasos de
+debugging, ejemplos de logs o cómo ejecutar con `valgrind`), dime qué prefieres
+incluir y lo añado.

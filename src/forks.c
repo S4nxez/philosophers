@@ -15,8 +15,15 @@
 void	use_forks(t_philo philo, t_program *program)
 {
 	pthread_mutex_lock(philo.left_fork);
-	pthread_mutex_lock(philo.right_fork);
 	philo_print(FORK, philo.id, program, get_current_time());
+	if (philo.left_fork == philo.right_fork)
+	{
+		while (!program->dead_flag)
+			usleep(100);
+		pthread_mutex_unlock(philo.left_fork);
+		return ;
+	}
+	pthread_mutex_lock(philo.right_fork);
 	philo_print(FORK, philo.id, program, get_current_time());
 }
 

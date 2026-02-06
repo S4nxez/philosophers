@@ -20,7 +20,7 @@ bool	is_number(char *arg)
 {
 	int	i;
 
-	if (arg == NULL)
+	if (arg == NULL || arg[0] == '\0')
 		return (false);
 	i = 0;
 	while (arg[i] != '\0')

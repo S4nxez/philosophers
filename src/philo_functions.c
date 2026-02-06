@@ -51,27 +51,27 @@ void	*philo_functions(void *params_void)
 {
 	t_params		params;
 	t_philo			*philo;
-	t_control		*has_eaten;
 	t_program		*program;
 	t_thread_args	*thread_args;
 
 	thread_args = (typeof(thread_args))params_void;
 	params = thread_args->params;
 	philo = thread_args->philo;
-	has_eaten = thread_args->has_eaten;
 	program = thread_args->program;
 	if (philo->id % 2 == 0)
 		usleep(200);
-	while (!program->dead_flag)
+	while (!program->dead_flag
+		&& philo->times_eaten != params.max_meals)
 	{
 		use_forks(*philo, program);
-		if (!program->dead_flag)
-			eat(params, philo, has_eaten, program);
+		if (program->dead_flag)
+			break ;
+		eat(params, philo, thread_args->has_eaten, program);
 		free_forks(*philo);
-		if (!program->dead_flag)
-			p_sleep(params.time_to_sleep, *philo, program);
-		if (!program->dead_flag)
-			think(params, *philo, program);
+		if (program->dead_flag)
+			break ;
+		p_sleep(params.time_to_sleep, *philo, program);
+		think(params, *philo, program);
 	}
 	return (NULL);
 }

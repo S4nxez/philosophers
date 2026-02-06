@@ -17,7 +17,9 @@ void	death_detector(t_params params, t_philo *philo, t_program *program)
 	long	elapsed_time;
 
 	usleep(50);
+	pthread_mutex_lock(&program->meal_lock);
 	elapsed_time = get_philo_elapsed_time(*philo);
+	pthread_mutex_unlock(&program->meal_lock);
 	if (elapsed_time > params.time_to_starve)
 	{
 		pthread_mutex_lock(&program->dead_lock);

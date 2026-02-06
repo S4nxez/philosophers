@@ -32,7 +32,7 @@ OBJ = \
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJ) -lpthread -o $(NAME)
 
 obj/%.o: src/%.c include/philo.h | $(OBJ_DIR)
 	$(CC) $(CFLAGS) -I$(INC_DIR) -c $< -o $@
