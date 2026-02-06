@@ -33,7 +33,7 @@ void	eat(t_params params, t_philo *philo, t_control *has_eaten,
 	philo->last_meal = get_current_time();
 	pthread_mutex_unlock(&program->meal_lock);
 	philo_print(EAT, philo->id, program, philo->last_meal);
-	usleep(params.time_to_eat);
+	ft_usleep(params.time_to_eat);
 	philo->times_eaten++;
 	pthread_mutex_lock(&has_eaten->mutex);
 	has_eaten->stop = true;
@@ -43,7 +43,20 @@ void	eat(t_params params, t_philo *philo, t_control *has_eaten,
 void	p_sleep(int time_to_sleep, t_philo philo, t_program *program)
 {
 	philo_print(SLEEP, philo.id, program, get_current_time());
-	usleep(time_to_sleep);
+	ft_usleep(time_to_sleep);
+}
+
+void	think(t_params params, t_philo philo, t_program *program)
+{
+	long	think_time;
+
+	philo_print(THINK, philo.id, program, get_current_time());
+	if (params.philo_number % 2 != 0)
+	{
+		think_time = params.time_to_eat * 2 - params.time_to_sleep;
+		if (think_time > 0)
+			ft_usleep(think_time);
+	}
 }
 
 void	*philo_functions(void *params_void)
@@ -59,6 +72,8 @@ void	*philo_functions(void *params_void)
 	philo = thread_args->philo;
 	has_eaten = thread_args->has_eaten;
 	program = thread_args->program;
+	if (philo->id % 2 == 0)
+		usleep(200);
 	while (!program->dead_flag)
 	{
 		use_forks(*philo, program);
@@ -68,7 +83,7 @@ void	*philo_functions(void *params_void)
 		if (!program->dead_flag)
 			p_sleep(params.time_to_sleep, *philo, program);
 		if (!program->dead_flag)
-			philo_print(THINK, philo->id, program, get_current_time());
+			think(params, *philo, program);
 	}
 	return (NULL);
 }

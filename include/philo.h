@@ -62,6 +62,7 @@ typedef struct s_program
 	pthread_mutex_t	meal_lock;
 	pthread_mutex_t	write_lock;
 	pthread_mutex_t	forks_state_mutex;
+	long			start_time;
 	t_philo			*philos;
 }					t_program;
 
@@ -93,6 +94,7 @@ void	*death_detector_launcher(void *params_void);
 long	philo_print(t_philo_action action, int philo, t_program *program, long ms);
 bool	is_number(char *arg);
 long	get_current_time(void);
+void	ft_usleep(long time_us);
 long	get_philo_elapsed_time(t_philo philo);
 int		ft_atoi(const char *str);
 void	free_mallocs(t_program *program, pthread_mutex_t *forks,

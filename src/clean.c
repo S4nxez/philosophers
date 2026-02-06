@@ -48,4 +48,6 @@ void	destroy_mutex(t_params params, pthread_mutex_t *forks,
 		i++;
 	}
 	pthread_mutex_destroy(&program->dead_lock);
+	pthread_mutex_destroy(&program->meal_lock);
+	pthread_mutex_destroy(&program->write_lock);
 }
