@@ -97,7 +97,7 @@ long			philo_print(t_philo_action action, int philo,
 					t_program *program, long ms);
 bool			is_number(char *arg);
 long			get_current_time(void);
-void			ft_usleep(long time_us);
+void			ft_usleep(long time_us, t_program *program);
 long			get_philo_elapsed_time(t_philo philo);
 int				ft_atoi(const char *str);
 void			free_mallocs(t_program *program, pthread_mutex_t *forks,
@@ -105,7 +105,7 @@ void			free_mallocs(t_program *program, pthread_mutex_t *forks,
 void			destroy_mutex(t_params params, pthread_mutex_t *forks,
 					t_control *has_eaten, t_program *program);
 void			join_threads(t_philo *philos, t_params params);
-void			use_forks(t_philo philo, t_program *program);
+int				use_forks(t_philo philo, t_program *program);
 void			free_forks(t_philo philo);
 void			init_mutexs(t_program *program);
 void			forks_launchers(t_params params, t_program *program);

@@ -12,7 +12,7 @@
 
 #include "philo.h"
 
-void	use_forks(t_philo philo, t_program *program)
+int	use_forks(t_philo philo, t_program *program)
 {
 	pthread_mutex_lock(philo.left_fork);
 	philo_print(FORK, philo.id, program, get_current_time());
@@ -21,10 +21,11 @@ void	use_forks(t_philo philo, t_program *program)
 		while (!program->dead_flag)
 			usleep(100);
 		pthread_mutex_unlock(philo.left_fork);
-		return ;
+		return (0);
 	}
 	pthread_mutex_lock(philo.right_fork);
 	philo_print(FORK, philo.id, program, get_current_time());
+	return (1);
 }
 
 void	free_forks(t_philo philo)

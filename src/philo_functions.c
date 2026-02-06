@@ -19,7 +19,7 @@ void	eat(t_params params, t_philo *philo, t_control *has_eaten,
 	philo->last_meal = get_current_time();
 	pthread_mutex_unlock(&program->meal_lock);
 	philo_print(EAT, philo->id, program, philo->last_meal);
-	ft_usleep(params.time_to_eat);
+	ft_usleep(params.time_to_eat, program);
 	pthread_mutex_lock(&program->meal_lock);
 	philo->times_eaten++;
 	pthread_mutex_unlock(&program->meal_lock);
@@ -31,7 +31,7 @@ void	eat(t_params params, t_philo *philo, t_control *has_eaten,
 void	p_sleep(int time_to_sleep, t_philo philo, t_program *program)
 {
 	philo_print(SLEEP, philo.id, program, get_current_time());
-	ft_usleep(time_to_sleep);
+	ft_usleep(time_to_sleep, program);
 }
 
 void	think(t_params params, t_philo philo, t_program *program)
@@ -43,35 +43,44 @@ void	think(t_params params, t_philo philo, t_program *program)
 	{
 		think_time = params.time_to_eat * 2 - params.time_to_sleep;
 		if (think_time > 0)
-			ft_usleep(think_time);
+			ft_usleep(think_time, program);
 	}
+}
+
+static int	philo_loop(t_thread_args *ta, t_philo *philo, t_program *prg)
+{
+	if (!use_forks(*philo, prg))
+		return (0);
+	if (prg->dead_flag)
+	{
+		free_forks(*philo);
+		return (0);
+	}
+	eat(ta->params, philo, ta->has_eaten, prg);
+	free_forks(*philo);
+	if (prg->dead_flag)
+		return (0);
+	p_sleep(ta->params.time_to_sleep, *philo, prg);
+	think(ta->params, *philo, prg);
+	return (1);
 }
 
 void	*philo_functions(void *params_void)
 {
-	t_params		params;
 	t_philo			*philo;
 	t_program		*program;
 	t_thread_args	*thread_args;
 
 	thread_args = (typeof(thread_args))params_void;
-	params = thread_args->params;
 	philo = thread_args->philo;
 	program = thread_args->program;
 	if (philo->id % 2 == 0)
 		usleep(200);
 	while (!program->dead_flag
-		&& philo->times_eaten != params.max_meals)
+		&& philo->times_eaten != thread_args->params.max_meals)
 	{
-		use_forks(*philo, program);
-		if (program->dead_flag)
+		if (!philo_loop(thread_args, philo, program))
 			break ;
-		eat(params, philo, thread_args->has_eaten, program);
-		free_forks(*philo);
-		if (program->dead_flag)
-			break ;
-		p_sleep(params.time_to_sleep, *philo, program);
-		think(params, *philo, program);
 	}
 	return (NULL);
 }

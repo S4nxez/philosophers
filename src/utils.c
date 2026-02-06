@@ -55,11 +55,15 @@ long	get_current_time(void)
 	return (tv.tv_sec * 1000 + tv.tv_usec / 1000);
 }
 
-void	ft_usleep(long time_us)
+void	ft_usleep(long time_us, t_program *program)
 {
 	long	start;
 
 	start = get_current_time();
 	while (get_current_time() - start < time_us / 1000)
+	{
+		if (program->dead_flag)
+			return ;
 		usleep(500);
+	}
 }
