@@ -55,6 +55,12 @@ typedef enum e_fork_state
 	TAKEN
 }	t_fork_state;
 
+typedef struct s_control
+{
+	bool			stop;
+	pthread_mutex_t	mutex;
+}	t_control;
+
 typedef struct s_program
 {
 	int				dead_flag;
@@ -63,6 +69,8 @@ typedef struct s_program
 	pthread_mutex_t	write_lock;
 	pthread_mutex_t	forks_state_mutex;
 	long			start_time;
+	pthread_mutex_t	*forks;
+	t_control		*has_eaten;
 	t_philo			*philos;
 }					t_program;
 
@@ -75,12 +83,6 @@ typedef enum e_philo_action
 	DIE
 }	t_philo_action;
 
-typedef struct s_control
-{
-	bool			stop;
-	pthread_mutex_t	mutex;
-}	t_control;
-
 typedef struct s_thread_args
 {
 	t_params		params;
@@ -89,18 +91,24 @@ typedef struct s_thread_args
 	t_program		*program;
 }	t_thread_args;
 
-void	*philo_functions(void *params_void);
-void	*death_detector_launcher(void *params_void);
-long	philo_print(t_philo_action action, int philo, t_program *program, long ms);
-bool	is_number(char *arg);
-long	get_current_time(void);
-void	ft_usleep(long time_us);
-long	get_philo_elapsed_time(t_philo philo);
-int		ft_atoi(const char *str);
-void	free_mallocs(t_program *program, pthread_mutex_t *forks,
-			t_control *has_eaten, t_thread_args *thread_args, t_philo *philos);
-void	destroy_mutex(t_params params, pthread_mutex_t *forks,
-			t_control *has_eaten, t_program *program);
-void	join_threads(t_philo *philos, t_params params);
-
+void			*philo_functions(void *params_void);
+void			*death_detector_launcher(void *params_void);
+long			philo_print(t_philo_action action, int philo,
+					t_program *program, long ms);
+bool			is_number(char *arg);
+long			get_current_time(void);
+void			ft_usleep(long time_us);
+long			get_philo_elapsed_time(t_philo philo);
+int				ft_atoi(const char *str);
+void			free_mallocs(t_program *program, pthread_mutex_t *forks,
+					t_control *has_eaten, t_philo *philos);
+void			destroy_mutex(t_params params, pthread_mutex_t *forks,
+					t_control *has_eaten, t_program *program);
+void			join_threads(t_philo *philos, t_params params);
+void			use_forks(t_philo philo, t_program *program);
+void			free_forks(t_philo philo);
+void			init_mutexs(t_program *program);
+void			forks_launchers(t_params params, t_program *program);
+t_thread_args	*launchers(t_params params, t_program *program);
+void			launch_philo(int i, t_thread_args *thread_args);
 #endif

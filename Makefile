@@ -1,62 +1,51 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: dansanc3 <dansanc3@student.42madrid>       +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2025/08/09 22:23:23 by dansanc3          #+#    #+#              #
-#    Updated: 2025/08/27 22:29:44 by dansanc3         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
-
-# Name of the executable
 NAME = philo
 
-# Compiler
 CC = gcc
+CFLAGS = -Wall -Wextra -Werror -g3 -fsanitize=address
 
-# Compiler flags
-CFLAGS = -Wall -Wextra -Werror -g3 -fsanitize=address -I$(PHILO_DIR)
-
-# Philo.h library path
-PHILO_DIR = include/
-OBJ_DIR = obj
 SRC_DIR = src
+OBJ_DIR = obj
+INC_DIR = include
 
-# Source files
-SRC = main philo_functions utils is_number starving ft_atoi clean
+SRC = \
+	main.c \
+	philo_functions.c \
+	utils.c \
+	is_number.c \
+	starving.c \
+	ft_atoi.c \
+	clean.c \
+	forks.c \
+	main_helpers.c
 
-# Object files
-OBJS = $(addprefix obj/, $(addsuffix .o, $(SRC)))
-OBJF = $(OBJ_DIR)/
+OBJ = \
+	obj/main.o \
+	obj/philo_functions.o \
+	obj/utils.o \
+	obj/is_number.o \
+	obj/starving.o \
+	obj/ft_atoi.o \
+	obj/clean.o \
+	obj/forks.o \
+	obj/main_helpers.o
 
-SRCS = $(addsuffix .c, $(SRC))
+all: $(NAME)
 
-# Compilation rule
-all: $(OBJF) $(LIBFT) $(NAME)
+$(NAME): $(OBJ)
+	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
 
-# Regla para compilar los archivos objeto
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(PHILO_DIR)/philo.h | $(OBJF)
-	$(CC) $(CFLAGS) -c $< -o $@
+obj/%.o: src/%.c include/philo.h | $(OBJ_DIR)
+	$(CC) $(CFLAGS) -I$(INC_DIR) -c $< -o $@
 
-$(NAME): $(OBJS)
-	$(CC) $(CFLAGS) -o $(NAME) $(OBJS)
+$(OBJ_DIR):
+	mkdir -p $(OBJ_DIR)
 
-$(OBJF):
-		@mkdir -p $(OBJ_DIR)
-
-# Rule to clean object files
 clean:
 	rm -rf $(OBJ_DIR)
-	$(MAKE) -C $(LIBFT_DIR) clean
 
-# Rule to clean all generated files
 fclean: clean
-	rm -f $(NAME) fclean
+	rm -f $(NAME)
 
-# Rule to recompile the entire project
 re: fclean all
 
-# Phony targets
-.PHONY: all bonus clean fclean re
+.PHONY: all clean fclean re

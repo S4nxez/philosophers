@@ -12,20 +12,6 @@
 
 #include "philo.h"
 
-void use_forks(t_philo philo, t_program *program)
-{
-	pthread_mutex_lock(philo.left_fork);
-	pthread_mutex_lock(philo.right_fork);
-	philo_print(FORK, philo.id, program, get_current_time());
-	philo_print(FORK, philo.id, program, get_current_time());
-}
-
-void free_forks(t_philo philo)
-{
-	pthread_mutex_unlock(philo.left_fork);
-	pthread_mutex_unlock(philo.right_fork);
-}
-
 void	eat(t_params params, t_philo *philo, t_control *has_eaten,
 	t_program *program)
 {

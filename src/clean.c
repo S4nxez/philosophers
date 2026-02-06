@@ -1,7 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   starving.c                                         :+:      :+:    :+:   */
+/*   clean.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: dansanc3 <dansanc3@student.42madrid>       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
@@ -13,13 +13,12 @@
 #include "philo.h"
 
 void	free_mallocs(t_program *program, pthread_mutex_t *forks,
-		t_control *has_eaten, t_thread_args *thread_args, t_philo *philos)
+		t_control *has_eaten, t_philo *philos)
 {
 	free(program);
 	free(forks);
 	free(has_eaten);
 	free(philos);
-	free(thread_args);
 }
 
 void	join_threads(t_philo *philos, t_params params)
