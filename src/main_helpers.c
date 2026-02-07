@@ -58,3 +58,31 @@ void	init_mutexs(t_program *program)
 	pthread_mutex_init(&program->write_lock, NULL);
 	pthread_mutex_init(&program->forks_state_mutex, NULL);
 }
+
+int	should_stop(t_philo *philo, t_thread_args *ta)
+{
+	int	eaten;
+
+	if (is_dead(ta->program))
+		return (1);
+	pthread_mutex_lock(&ta->program->meal_lock);
+	eaten = philo->times_eaten;
+	pthread_mutex_unlock(&ta->program->meal_lock);
+	return (eaten == ta->params.max_meals);
+}
+
+t_program	*init_program(t_params params)
+{
+	t_program	*program;
+
+	program = malloc(sizeof(t_program));
+	if (!program)
+		return (NULL);
+	program->philos = malloc(sizeof(t_philo) * params.philo_number);
+	program->forks = malloc(sizeof(pthread_mutex_t) * params.philo_number);
+	program->has_eaten = malloc(sizeof(t_control) * params.philo_number);
+	if (!program->philos || !program->forks || !program->has_eaten)
+		return (free_program(program), NULL);
+	program->dead_flag = false;
+	return (program);
+}

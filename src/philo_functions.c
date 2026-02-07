@@ -49,15 +49,15 @@ void	think(t_params params, t_philo philo, t_program *program)
 
 static int	philo_loop(t_thread_args *ta, t_philo *philo, t_program *prg)
 {
-	if (!use_forks(*philo, prg))
+	if (!use_forks(philo, prg))
 		return (0);
 	if (is_dead(prg))
 	{
-		free_forks(*philo);
+		free_forks(philo);
 		return (0);
 	}
 	eat(ta->params, philo, ta->has_eaten, prg);
-	free_forks(*philo);
+	free_forks(philo);
 	if (is_dead(prg))
 		return (0);
 	p_sleep(ta->params.time_to_sleep, *philo, prg);
@@ -76,8 +76,7 @@ void	*philo_functions(void *params_void)
 	program = thread_args->program;
 	if (philo->id % 2 == 0)
 		usleep(200);
-	while (!is_dead(program)
-		&& philo->times_eaten != thread_args->params.max_meals)
+	while (should_stop(philo, thread_args) == 0)
 	{
 		if (!philo_loop(thread_args, philo, program))
 			break ;

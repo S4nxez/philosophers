@@ -106,10 +106,13 @@ void			free_mallocs(t_program *program, pthread_mutex_t *forks,
 void			destroy_mutex(t_params params, pthread_mutex_t *forks,
 					t_control *has_eaten, t_program *program);
 void			join_threads(t_philo *philos, t_params params);
-int				use_forks(t_philo philo, t_program *program);
-void			free_forks(t_philo philo);
+int				use_forks(t_philo *philo, t_program *program);
+void			free_forks(t_philo *philo);
 void			init_mutexs(t_program *program);
 void			forks_launchers(t_params params, t_program *program);
 t_thread_args	*launchers(t_params params, t_program *program);
 void			launch_philo(int i, t_thread_args *thread_args);
+void			free_program(t_program *p);
+int				should_stop(t_philo *philo, t_thread_args *ta);
+t_program		*init_program(t_params params);
 #endif
