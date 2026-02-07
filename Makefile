@@ -1,7 +1,7 @@
 NAME = philo
 
-CC = gcc
-CFLAGS = -Wall -Wextra -Werror -g3 -fsanitize=address
+CC = cc
+CFLAGS = -Wall -Wextra -Werror -g3 -fsanitize=thread
 
 SRC_DIR = src
 OBJ_DIR = obj

@@ -96,6 +96,7 @@ void			*death_detector_launcher(void *params_void);
 long			philo_print(t_philo_action action, int philo,
 					t_program *program, long ms);
 bool			is_number(char *arg);
+int				is_dead(t_program *program);
 long			get_current_time(void);
 void			ft_usleep(long time_us, t_program *program);
 long			get_philo_elapsed_time(t_philo philo);

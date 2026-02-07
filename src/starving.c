@@ -21,12 +21,7 @@ void	death_detector(t_params params, t_philo *philo, t_program *program)
 	elapsed_time = get_philo_elapsed_time(*philo);
 	pthread_mutex_unlock(&program->meal_lock);
 	if (elapsed_time > params.time_to_starve)
-	{
-		pthread_mutex_lock(&program->dead_lock);
 		philo_print(DIE, philo->id, program, get_current_time());
-		program->dead_flag = true;
-		pthread_mutex_unlock(&program->dead_lock);
-	}
 }
 
 void	*death_detector_launcher(void *params_void)
@@ -40,7 +35,7 @@ void	*death_detector_launcher(void *params_void)
 	params = thread_args->params;
 	philo = thread_args->philo;
 	program = thread_args->program;
-	while (!program->dead_flag)
+	while (!is_dead(program))
 	{
 		death_detector(params, philo, program);
 		usleep(100);

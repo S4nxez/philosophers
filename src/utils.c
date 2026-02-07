@@ -18,24 +18,41 @@
  *
  * @return action timestamp
  */
+int	is_dead(t_program *program)
+{
+	int	val;
+
+	pthread_mutex_lock(&program->dead_lock);
+	val = program->dead_flag;
+	pthread_mutex_unlock(&program->dead_lock);
+	return (val);
+}
+
 long	philo_print(t_philo_action action, int philo, t_program *program,
 		long ms)
 {
 	long	ts;
 
 	ts = ms - program->start_time;
-	pthread_mutex_lock(&program->write_lock);
-	if (action == FORK && !program->dead_flag)
-		printf("%ld %d has taken a fork\n", ts, philo);
-	else if (action == EAT && !program->dead_flag)
-		printf("%ld %d is eating\n", ts, philo);
-	else if (action == SLEEP && !program->dead_flag)
-		printf("%ld %d is sleeping\n", ts, philo);
-	else if (action == THINK && !program->dead_flag)
-		printf("%ld %d is thinking\n", ts, philo);
-	else if (action == DIE && !program->dead_flag)
-		printf("%ld %d died\n", ts, philo);
-	pthread_mutex_unlock(&program->write_lock);
+	pthread_mutex_lock(&program->dead_lock);
+	if (!program->dead_flag)
+	{
+		if (action == DIE)
+			program->dead_flag = true;
+		pthread_mutex_lock(&program->write_lock);
+		if (action == FORK)
+			printf("%ld %d has taken a fork\n", ts, philo);
+		else if (action == EAT)
+			printf("%ld %d is eating\n", ts, philo);
+		else if (action == SLEEP)
+			printf("%ld %d is sleeping\n", ts, philo);
+		else if (action == THINK)
+			printf("%ld %d is thinking\n", ts, philo);
+		else if (action == DIE)
+			printf("%ld %d died\n", ts, philo);
+		pthread_mutex_unlock(&program->write_lock);
+	}
+	pthread_mutex_unlock(&program->dead_lock);
 	return (ms);
 }
 
@@ -62,7 +79,7 @@ void	ft_usleep(long time_us, t_program *program)
 	start = get_current_time();
 	while (get_current_time() - start < time_us / 1000)
 	{
-		if (program->dead_flag)
+		if (is_dead(program))
 			return ;
 		usleep(500);
 	}

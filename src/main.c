@@ -91,13 +91,8 @@ void	main_loop(t_program *program, t_params params)
 {
 	while (1)
 	{
-		pthread_mutex_lock(&program->dead_lock);
-		if (program->dead_flag)
-		{
-			pthread_mutex_unlock(&program->dead_lock);
+		if (is_dead(program))
 			break ;
-		}
-		pthread_mutex_unlock(&program->dead_lock);
 		if (all_ate_enough(program, params))
 		{
 			pthread_mutex_lock(&program->dead_lock);
