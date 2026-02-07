@@ -12,31 +12,6 @@
 
 #include "philo.h"
 
-void	launch_philo(int i, t_thread_args *thread_args)
-{
-	t_philo		*philo;
-	t_program	*prg;
-
-	philo = thread_args->philo;
-	prg = thread_args->program;
-	philo->id = i + 1;
-	philo->times_eaten = 0;
-	philo->dead = 0;
-	philo->last_meal = 0;
-	philo->born = prg->start_time;
-	philo->left_fork = &prg->forks[i];
-	if (i + 1 == thread_args->params.philo_number)
-		philo->right_fork = &prg->forks[0];
-	else
-		philo->right_fork = &prg->forks[i + 1];
-	prg->has_eaten[i].stop = false;
-	thread_args->has_eaten = &prg->has_eaten[i];
-	pthread_create(&philo->thread, NULL, philo_functions,
-		(void *)thread_args);
-	pthread_create(&philo->death_thread, NULL,
-		death_detector_launcher, (void *)thread_args);
-}
-
 bool	parse_input(int argc, char **argv, t_params *params)
 {
 	int	i;
@@ -104,6 +79,14 @@ void	main_loop(t_program *program, t_params params)
 	}
 }
 
+static void	cleanup(t_program *p, t_params par, t_thread_args *ta)
+{
+	join_threads(p->philos, par);
+	destroy_mutex(par, p->forks, p);
+	free_mallocs(p, p->forks, p->philos);
+	free(ta);
+}
+
 int	main(int argc, char **argv)
 {
 	t_params		params;
@@ -120,15 +103,11 @@ int	main(int argc, char **argv)
 	thread_args = launchers(params, program);
 	if (!thread_args)
 	{
-		destroy_mutex(params, program->forks, program->has_eaten,
-			program);
+		destroy_mutex(params, program->forks, program);
 		return (free_program(program), 1);
 	}
+	set_philos_start(program, params);
 	main_loop(program, params);
-	join_threads(program->philos, params);
-	destroy_mutex(params, program->forks, program->has_eaten, program);
-	free_mallocs(program, program->forks, program->has_eaten,
-		program->philos);
-	free(thread_args);
+	cleanup(program, params, thread_args);
 	return (0);
 }

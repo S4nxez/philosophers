@@ -64,13 +64,13 @@ typedef struct s_control
 typedef struct s_program
 {
 	int				dead_flag;
+	int				ready;
 	pthread_mutex_t	dead_lock;
 	pthread_mutex_t	meal_lock;
 	pthread_mutex_t	write_lock;
 	pthread_mutex_t	forks_state_mutex;
 	long			start_time;
 	pthread_mutex_t	*forks;
-	t_control		*has_eaten;
 	t_philo			*philos;
 }					t_program;
 
@@ -87,7 +87,6 @@ typedef struct s_thread_args
 {
 	t_params		params;
 	t_philo			*philo;
-	t_control		*has_eaten;
 	t_program		*program;
 }	t_thread_args;
 
@@ -102,9 +101,9 @@ void			ft_usleep(long time_us, t_program *program);
 long			get_philo_elapsed_time(t_philo philo);
 int				ft_atoi(const char *str);
 void			free_mallocs(t_program *program, pthread_mutex_t *forks,
-					t_control *has_eaten, t_philo *philos);
+					t_philo *philos);
 void			destroy_mutex(t_params params, pthread_mutex_t *forks,
-					t_control *has_eaten, t_program *program);
+					t_program *program);
 void			join_threads(t_philo *philos, t_params params);
 int				use_forks(t_philo *philo, t_program *program);
 void			free_forks(t_philo *philo);
@@ -115,4 +114,6 @@ void			launch_philo(int i, t_thread_args *thread_args);
 void			free_program(t_program *p);
 int				should_stop(t_philo *philo, t_thread_args *ta);
 t_program		*init_program(t_params params);
+void			wait_ready(t_program *program);
+void			set_philos_start(t_program *prg, t_params params);
 #endif

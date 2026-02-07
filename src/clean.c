@@ -18,16 +18,14 @@ void	free_program(t_program *p)
 		return ;
 	free(p->philos);
 	free(p->forks);
-	free(p->has_eaten);
 	free(p);
 }
 
 void	free_mallocs(t_program *program, pthread_mutex_t *forks,
-		t_control *has_eaten, t_philo *philos)
+		t_philo *philos)
 {
 	free(program);
 	free(forks);
-	free(has_eaten);
 	free(philos);
 }
 
@@ -45,7 +43,7 @@ void	join_threads(t_philo *philos, t_params params)
 }
 
 void	destroy_mutex(t_params params, pthread_mutex_t *forks,
-		t_control *has_eaten, t_program *program)
+			t_program *program)
 {
 	int	i;
 
@@ -53,10 +51,24 @@ void	destroy_mutex(t_params params, pthread_mutex_t *forks,
 	while (i < params.philo_number)
 	{
 		pthread_mutex_destroy(&forks[i]);
-		pthread_mutex_destroy(&has_eaten[i].mutex);
 		i++;
 	}
 	pthread_mutex_destroy(&program->dead_lock);
 	pthread_mutex_destroy(&program->meal_lock);
 	pthread_mutex_destroy(&program->write_lock);
+}
+
+void	wait_ready(t_program *program)
+{
+	while (1)
+	{
+		pthread_mutex_lock(&program->dead_lock);
+		if (program->ready)
+		{
+			pthread_mutex_unlock(&program->dead_lock);
+			return ;
+		}
+		pthread_mutex_unlock(&program->dead_lock);
+		usleep(50);
+	}
 }

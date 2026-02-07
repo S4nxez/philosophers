@@ -58,10 +58,7 @@ long	philo_print(t_philo_action action, int philo, t_program *program,
 
 long	get_philo_elapsed_time(t_philo philo)
 {
-	if (philo.last_meal != 0)
-		return (get_current_time() - philo.last_meal);
-	else
-		return (get_current_time() - philo.born);
+	return (get_current_time() - philo.last_meal);
 }
 
 long	get_current_time(void)

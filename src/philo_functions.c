@@ -12,7 +12,7 @@
 
 #include "philo.h"
 
-void	eat(t_params params, t_philo *philo, t_control *has_eaten,
+void	eat(t_params params, t_philo *philo,
 	t_program *program)
 {
 	pthread_mutex_lock(&program->meal_lock);
@@ -23,9 +23,6 @@ void	eat(t_params params, t_philo *philo, t_control *has_eaten,
 	pthread_mutex_lock(&program->meal_lock);
 	philo->times_eaten++;
 	pthread_mutex_unlock(&program->meal_lock);
-	pthread_mutex_lock(&has_eaten->mutex);
-	has_eaten->stop = true;
-	pthread_mutex_unlock(&has_eaten->mutex);
 }
 
 void	p_sleep(int time_to_sleep, t_philo philo, t_program *program)
@@ -56,7 +53,7 @@ static int	philo_loop(t_thread_args *ta, t_philo *philo, t_program *prg)
 		free_forks(philo);
 		return (0);
 	}
-	eat(ta->params, philo, ta->has_eaten, prg);
+	eat(ta->params, philo, prg);
 	free_forks(philo);
 	if (is_dead(prg))
 		return (0);
@@ -74,8 +71,9 @@ void	*philo_functions(void *params_void)
 	thread_args = (typeof(thread_args))params_void;
 	philo = thread_args->philo;
 	program = thread_args->program;
+	wait_ready(program);
 	if (philo->id % 2 == 0)
-		usleep(200);
+		ft_usleep(thread_args->params.time_to_eat / 2, program);
 	while (should_stop(philo, thread_args) == 0)
 	{
 		if (!philo_loop(thread_args, philo, program))

@@ -20,10 +20,8 @@ void	forks_launchers(t_params params, t_program *program)
 	while (i < params.philo_number)
 	{
 		pthread_mutex_init(&program->forks[i], NULL);
-		pthread_mutex_init(&program->has_eaten[i].mutex, NULL);
 		i++;
 	}
-	program->start_time = get_current_time();
 }
 
 t_thread_args	*launchers(t_params params, t_program *program)
@@ -80,9 +78,9 @@ t_program	*init_program(t_params params)
 		return (NULL);
 	program->philos = malloc(sizeof(t_philo) * params.philo_number);
 	program->forks = malloc(sizeof(pthread_mutex_t) * params.philo_number);
-	program->has_eaten = malloc(sizeof(t_control) * params.philo_number);
-	if (!program->philos || !program->forks || !program->has_eaten)
+	if (!program->philos || !program->forks)
 		return (free_program(program), NULL);
 	program->dead_flag = false;
+	program->ready = 0;
 	return (program);
 }
