@@ -113,9 +113,13 @@ int	main(int argc, char **argv)
 	if (!parse_input(argc, argv, &params))
 		return (1);
 	program = malloc(sizeof(t_program));
+	if (!program)
+		return (1);
 	program->philos = malloc(sizeof(t_philo) * params.philo_number);
 	program->forks = malloc(sizeof(pthread_mutex_t) * params.philo_number);
 	program->has_eaten = malloc(sizeof(t_control) * params.philo_number);
+	if (!program || !program->philos || !program->forks || !program->has_eaten)
+		return (free_program(program), 1);
 	program->dead_flag = false;
 	init_mutexs(program);
 	forks_launchers(params, program);

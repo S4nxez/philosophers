@@ -33,6 +33,8 @@ t_thread_args	*launchers(t_params params, t_program *program)
 
 	i = 0;
 	thread_args = malloc(sizeof(t_thread_args) * params.philo_number);
+	if (!thread_args)
+		return (NULL);
 	while (i < params.philo_number)
 	{
 		thread_args[i].params = params;

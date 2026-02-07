@@ -12,6 +12,16 @@
 
 #include "philo.h"
 
+void	free_program(t_program *p)
+{
+	if (!p)
+		return ;
+	free(p->philos);
+	free(p->forks);
+	free(p->has_eaten);
+	free(p);
+}
+
 void	free_mallocs(t_program *program, pthread_mutex_t *forks,
 		t_control *has_eaten, t_philo *philos)
 {
